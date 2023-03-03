@@ -1,0 +1,29 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Simulation"
+        xmlns:Collections="clr-namespace:System.Collections;assembly=mscorlib" x:Class="Simulation.MainWindow"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Name="simWindow" Background="Black">
+    <Grid Name="maingrid" >
+
+
+        <Canvas Name="canvas"  Height="15000" Width="15000" Background="Black" Margin="-7100,-7283,-7100,-7283" RenderTransformOrigin="0.5,0.501">
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="0"/>
+                </TransformGroup>
+            </Canvas.RenderTransform>
+
+
+        </Canvas>
+        <ComboBox Name="Dropdown" Width="100" Height="50"  Margin="0,0,690,374"  SelectedIndex="0" BorderBrush="#FF120101"
+                  SelectionChanged="dropdownChange">
+        </ComboBox>
+    </Grid>
+</Window>

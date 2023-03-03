@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace SpaceSim {
     public class SpaceObject {
@@ -35,23 +36,28 @@ namespace SpaceSim {
             if (orbits != null) { Console.Write($"{orbits.name} "); } else { Console.Write("N/A "); };
             Console.WriteLine();
         }
-        public Tuple<double, double> getPosition(double days) {
-            if (this.orbits == null) {
+        public Tuple<double, double> getPosition(double days, Boolean isFocused) {
+            if (orbits == null || isFocused) {
                 return Tuple.Create(0.0, 0.0);
             } else {
-                Tuple<double, double> OrbitalCenter = this.orbits.getPosition(days);
-
                 double angle = (days / orbitalPeriod) * 2 * Math.PI;
-                double X = orbitalRadius * Math.Cos(angle);
-                double Y = orbitalRadius * Math.Sin(angle);
-                X += OrbitalCenter.Item1;
-                Y += OrbitalCenter.Item2;
-                X = Math.Round(X);
-                Y = Math.Round(Y);
-                return Tuple.Create(X, Y);
-            }
-        }
-    }
+                double X; double Y;
+
+                    X = orbitalRadius * Math.Cos(angle);
+                    Y = orbitalRadius * Math.Sin(angle);
+                
+            
+																if (orbits.orbits != null) {
+																				(double parentX, double parentY) = orbits.getPosition(days, false);
+																				X += parentX;
+																				Y += parentY;
+																}
+
+																return Tuple.Create(X, Y);
+												}
+								}
+
+				}
 
     public class Star : SpaceObject {
         public Star(string name, double orbitalRadius, double radius, double orbitalPeriod, double rotationalPeriod, string color, SpaceObject orbits) : base(name, orbitalRadius, radius, orbitalPeriod, rotationalPeriod, color, orbits) { }
@@ -102,6 +108,10 @@ namespace SpaceSim {
             Console.Write("Dwarf planet : ");
             base.Draw();
         }
+    }
+    public class Initialize {
+
+        public List<SpaceObject> SolarSystem() { return new InitializeSolarSystem().solarSystem; }
     }
 
 }
