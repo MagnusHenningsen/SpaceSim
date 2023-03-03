@@ -31,7 +31,7 @@ class Astronomy {
 																if (x.Name.Equals(inp, StringComparison.OrdinalIgnoreCase)) {
                     found = true;
                     x.Draw();
-                    Console.WriteLine($"Position after {days} days: {x.getPosition(days, false)}");
+                    Console.WriteLine($"Position after {days} days: {x.getPosition(days, false, 0)}");
                     List<SpaceObject> satellites = new List<SpaceObject>();
                     solarSystem.ForEach((y) => {
                         if (y.Orbits != null && y.Orbits.Name.Equals(x.Name, StringComparison.OrdinalIgnoreCase)) {
@@ -41,7 +41,7 @@ class Astronomy {
                     Console.WriteLine($"Number of natural satellites found for {x.Name}: {satellites.Count}");
                     satellites.ForEach((sat) => {
                         sat.Draw();
-                        Console.WriteLine($"Position after {days} days: {sat.getPosition(days, false)}");
+                        Console.WriteLine($"Position after {days} days: {sat.getPosition(days, false, 0)}");
                     });
                     break;
                 }

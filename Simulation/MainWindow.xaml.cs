@@ -25,141 +25,120 @@ namespace Simulation {
 				public partial class MainWindow : Window {
 								List<SpaceSim.SpaceObject> FocusedObjects = new List<SpaceObject>();
 								List<SpaceSim.SpaceObject> solarSystem = new List<SpaceObject>();
-								private double cWidth;
-								private double cHeight;
-								public MainWindow() {
-												InitializeComponent();
-												InitSolarSystem();
-												List<SpaceSim.SpaceObject> GreaterObjects = new List<SpaceSim.SpaceObject>();
-												solarSystem.ForEach((x) => {
-																if (x is Planet || x is Star || x is Dwarf) {
-																				GreaterObjects.Add(x);
-																}
-												});
-												Dropdown.ItemsSource = GreaterObjects;
-												Dropdown.SelectedIndex = 0;
-												Dropdown.DisplayMemberPath = "Name";
-												Dropdown.SelectionChanged += dropdownChange;
-												canvas.MouseDown += myCanvas_MouseDown;
-												canvas.MouseMove += myCanvas_MouseMove;
-												canvas.MouseUp += myCanvas_MouseUp;
-												canvas.MouseWheel += myCanvas_MouseWheel;
-												FocusedObjects = GreaterObjects;
-												SizeChanged += Window_SizeChanged;
-												DispatcherTimer timer = new DispatcherTimer();
-												timer.Interval = TimeSpan.FromMilliseconds(1); // Set the interval of the timer to 1 second
-												timer.Tick += Timer_Tick; // Add the event handler for the timer's tick event
-												timer.Start(); // Start the timer
-												RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
-
-												PaintSystem(FocusedObjects);
-								}
-								private void Timer_Tick(object sender, EventArgs e) {
-												days += 1;
-												this.InvalidateVisual();
-												PaintSystem(FocusedObjects);
-								}
-								private void Window_SizeChanged(object sender, SizeChangedEventArgs e) {
-												InvalidateVisual();
-								}
-								private void Window_Loaded(object sender, RoutedEventArgs e) {
-
-												PaintSystem(FocusedObjects);
-								}
+								double days = 0;
 								private Point _start;
 								private double _zoom = 1.0;
 								private Point _origin = new Point(0, 0);
-								private double days = 0;
-								private void myCanvas_MouseDown(object sender, MouseButtonEventArgs e) {
-												if (e.LeftButton == MouseButtonState.Pressed) {
-																_start = e.GetPosition(this);
-																_origin.X = canvas.RenderTransform.Value.OffsetX;
-																_origin.Y = canvas.RenderTransform.Value.OffsetY;
-																canvas.Cursor = Cursors.Hand;
-																canvas.CaptureMouse();
-												}
-								}
-								private void myCanvas_MouseMove(object sender, MouseEventArgs e) {
-												if (e.LeftButton == MouseButtonState.Pressed) {
-																Point p = e.GetPosition(this);
-																Matrix m = canvas.RenderTransform.Value;
-																m.OffsetX = _origin.X + (p.X - _start.X);
-																m.OffsetY = _origin.Y + (p.Y - _start.Y);
-																canvas.RenderTransform = new MatrixTransform(m);
-												}
-								}
-								private void myCanvas_MouseUp(object sender, MouseButtonEventArgs e) {
-												canvas.ReleaseMouseCapture();
-												canvas.Cursor = Cursors.Arrow;
-								}
-								private void myCanvas_MouseWheel(object sender, MouseWheelEventArgs e) {
-												Matrix matrix = this.RenderTransform is MatrixTransform transform ? transform.Matrix : Matrix.Identity;
-												_zoom *= e.Delta > 0 ? 1.1 : 0.9;
-												_zoom = Math.Max(0.1, Math.Min(10, _zoom));
-												if (_zoom == 0) {
-																_zoom = 0.05;
-												}
-												matrix.ScaleAtPrepend(_zoom, _zoom, _origin.X, _origin.Y);
+								public MainWindow() {
+												InitializeComponent();
 
-												canvas.RenderTransform = new MatrixTransform(matrix);
+												InitSolarSystem();
+												solarSystem.ForEach(obj => {
+																if (obj is Star || obj is Planet || obj is Dwarf || obj is Asteroid) {
+																				FocusedObjects.Add(obj);
+																}
+												});
+												List<SpaceObject> GreaterObjects = FocusedObjects;
+												Dropdown.ItemsSource = FocusedObjects;
+												Dropdown.SelectedIndex = 0;
+												Dropdown.DisplayMemberPath = "Name";
+												Dropdown.SelectionChanged += dropdownChange;
+												DispatcherTimer timer = new DispatcherTimer();
+												timer.Interval = TimeSpan.FromMilliseconds(1); 
+												timer.Tick += Timer_Tick;
+												timer.Start(); 
+												Paint();
 								}
-								private void PaintSystem(List<SpaceObject> selectedObjects) {
-												canvas.Children.Clear();
+								public void Timer_Tick(object sender, EventArgs e) {
+												days += 0.5;
+												InvalidateVisual();
+									
+												Paint();
+								}
+
+								private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e) {
+												var currentScale = (canvas.LayoutTransform as ScaleTransform)?.ScaleX ?? 1.0;
+												var newScale = currentScale + e.Delta / 1000.0;
+												newScale = Math.Min(Math.Max(newScale, 0.5), 2.0);
+												canvas.LayoutTransform = new ScaleTransform(newScale, newScale);
+								}
+								public double centerRad = 0;
+								private void Paint() {
 												int counter = 0;
-												foreach (SpaceObject obj in selectedObjects) {
-																Ellipse ellipse = new Ellipse();
-																SolidColorBrush brush;
-																if (obj.Name.Equals("Sun")) {
-																				brush = new SolidColorBrush(Colors.Orange);
+												canvas.Children.Clear();
+												foreach (SpaceObject obj in FocusedObjects) {
+																if (counter == 0) {
+																				Ellipse ellipse = new Ellipse();
+																				SolidColorBrush br = new SolidColorBrush(Colors.Yellow);
+																				ellipse.Width = Math.Max(obj.Radius / 10, 50); ellipse.Height = Math.Max(50, obj.Radius / 10);
+																				ellipse.Fill = br;
+																				ellipse.Stroke = new SolidColorBrush(Colors.White);
+																				ellipse.StrokeThickness = 0.5;
+																				centerRad = obj.Radius  * 150;
+																				Tuple<double, double> point = obj.getPosition(days, true, 0);
+																				Canvas.SetLeft(ellipse, this.ActualWidth / 2 - ellipse.Width / 2);
+																				Canvas.SetTop(ellipse, this.ActualHeight / 2 - ellipse.Height / 2);
+																				canvas.Children.Add(ellipse);
+
+																				
 																} else {
-																				brush = new SolidColorBrush(Colors.Blue);
-																}
-																cWidth = simWindow.Width; cHeight = simWindow.Height;
+																				Ellipse ellipse = new Ellipse();
+																				SolidColorBrush br = new SolidColorBrush(Colors.Red);
+																				Tuple<double, double> point;
 
-																Tuple<double, double> point = obj.getPosition(days, counter==0);
-																if (obj.Name.Equals("Sun")) {
-																				ellipse.Width = Math.Max(5, obj.Radius / 10);
-																				ellipse.Height = Math.Max(5, obj.Radius / 10);
-																} else if (obj is Moon) {
-																				ellipse.Width = Math.Max(3, obj.Radius);
-																				ellipse.Height = Math.Max(3, obj.Radius);
+																								ellipse.Width = Math.Max(5, obj.Radius); ellipse.Height = Math.Max(5, obj.Radius);
+																								ellipse.Fill = br;
+																								ellipse.Stroke = new SolidColorBrush(Colors.White);
+																								ellipse.StrokeThickness = 0.5;
+																								point = obj.getPosition(days, false, centerRad);
+																				
+																				double right = this.ActualWidth / 2 - ellipse.Width / 2 + point.Item1 / 4000;
+																				double bottom = this.ActualHeight / 2 - ellipse.Height / 2 + point.Item2 / 4000;
+																				Canvas.SetLeft(ellipse, right);
+																				Canvas.SetTop(ellipse, bottom);
+																				canvas.Children.Add(ellipse);
+																				if (obj is Planet || obj is Dwarf ) {
+																								Ellipse orbit = new Ellipse();
+																								orbit.Width = (obj.OrbitalRadius + centerRad) / 2000;
+																								orbit.Height = orbit.Width;
+																								orbit.Stroke = new SolidColorBrush(Colors.White);
+																								orbit.StrokeThickness = 0.5;
+																								Canvas.SetLeft(orbit, this.ActualWidth / 2 - orbit.Width / 2);
+																								Canvas.SetTop(orbit, this.ActualHeight / 2 - orbit.Height / 2);
+																								canvas.Children.Add(orbit);
+																				}
+																				TextBlock textBlock = new TextBlock();
+																				textBlock.Text = obj.Name;
+																				textBlock.Foreground = Brushes.White;
+																				textBlock.TextAlignment = TextAlignment.Left;
+																				Canvas.SetLeft(textBlock, Canvas.GetLeft(ellipse) - (textBlock.ActualWidth / 2) + (ellipse.ActualWidth / 2));
+																				Canvas.SetTop(textBlock, Canvas.GetTop(ellipse) - textBlock.ActualHeight - 25);
+																				canvas.Children.Add(textBlock);
 																}
-																else {
-																				ellipse.Width = obj.Radius;
-																				ellipse.Height = obj.Radius;
-																}
-																ellipse.Fill = brush;
-																ellipse.Stroke = Brushes.White; // Add this line to set the stroke to white
-																ellipse.StrokeThickness = 0.5; // Add this line to set the thickness of the stroke
 
-																Canvas.SetLeft(ellipse, canvas.Width / 2 - (ellipse.Width / 2) + point.Item1 / 1000);
-																Canvas.SetTop(ellipse, canvas.Height / 2 - (ellipse.Height / 2) + point.Item2 / 1000);
-																canvas.Children.Add(ellipse);
-																TextBlock textBlock = new TextBlock();
-																textBlock.Text = obj.Name;
-																textBlock.Foreground = Brushes.White;
-																textBlock.TextAlignment = TextAlignment.Left;
-																Canvas.SetLeft(textBlock, Canvas.GetLeft(ellipse) - (textBlock.ActualWidth / 2) + (ellipse.ActualWidth / 2));
-																Canvas.SetTop(textBlock, Canvas.GetTop(ellipse) - textBlock.ActualHeight - 25);
-																canvas.Children.Add(textBlock);
 																counter++;
+																
 												}
 								}
 
+								private void SetFocus(SpaceObject obj) {
+												FocusedObjects.Clear();
+												FocusedObjects.Add(obj);
+												solarSystem.ForEach((x) => {
+																if (x.Orbits != null && obj.Name.Equals(x.Orbits.Name)) {
+																				FocusedObjects.Add(x);
+																}
+												});
 
+								}
 
 								private void dropdownChange(object sender, SelectionChangedEventArgs e) {
 												SpaceObject selectedSpaceObject = Dropdown.SelectedItem as SpaceObject;
 												if (selectedSpaceObject != null) {
-																FocusedObjects.Clear();
-																FocusedObjects.Add(selectedSpaceObject);
-																solarSystem.ForEach(obj => {
-																				if (obj.Orbits != null && obj.Orbits.Name.Equals(selectedSpaceObject.Name)) {
-																								FocusedObjects.Add(obj);
-																				}
-																});
+																SetFocus(selectedSpaceObject);
 												}
 								}
+
 								private void InitSolarSystem() {
 												SpaceObject Sun = new Star("Sun", 0, 696, 0, 27, "White", null);
 												solarSystem.Add(Sun);

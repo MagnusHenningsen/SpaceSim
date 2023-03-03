@@ -36,19 +36,21 @@ namespace SpaceSim {
             if (orbits != null) { Console.Write($"{orbits.name} "); } else { Console.Write("N/A "); };
             Console.WriteLine();
         }
-        public Tuple<double, double> getPosition(double days, Boolean isFocused) {
+        public Tuple<double, double> getPosition(double days, Boolean isFocused, double centerRad) {
             if (orbits == null || isFocused) {
                 return Tuple.Create(0.0, 0.0);
             } else {
                 double angle = (days / orbitalPeriod) * 2 * Math.PI;
                 double X; double Y;
-
-                    X = orbitalRadius * Math.Cos(angle);
-                    Y = orbitalRadius * Math.Sin(angle);
-                
-            
+                if (this is Moon) { // deprecated?
+                    X = (orbitalRadius * 10 + centerRad ) * Math.Cos(angle);
+                    Y = (orbitalRadius * 10 + centerRad ) * Math.Sin(angle);
+                } else { 
+                    X = (orbitalRadius + centerRad) * Math.Cos(angle);
+                    Y = (orbitalRadius + centerRad) * Math.Sin(angle);
+                    }
 																if (orbits.orbits != null) {
-																				(double parentX, double parentY) = orbits.getPosition(days, false);
+																				(double parentX, double parentY) = orbits.getPosition(days, false, centerRad);
 																				X += parentX;
 																				Y += parentY;
 																}
