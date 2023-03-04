@@ -34,18 +34,21 @@ namespace Simulation {
 								Boolean Doubled = false;
 								Boolean DisplayNames = true;
 								MediaPlayer mediaPlayer;
+
 								public MainWindow() {
 												InitializeComponent();
 
 												InitSolarSystem();
 												SetFocus(solarSystem[0]);
-												List<SpaceObject> GreaterObjects = FocusedObjects;
-												solarSystem.ForEach(x => {
-																if (x is AsteroidBelt || x is Asteroid || x is Comet) {
-																				GreaterObjects.Remove(x);
+
+												List<SpaceObject> GreaterObjects = new List<SpaceObject>();
+												FocusedObjects.ForEach(obj => {
+																if (obj is Planet || obj is Star || obj is Dwarf) {
+																				GreaterObjects.Add(obj);
 																}
 												});
-												Dropdown.ItemsSource = FocusedObjects;
+
+												Dropdown.ItemsSource = GreaterObjects;
 												Dropdown.SelectedIndex = 0;
 												Dropdown.DisplayMemberPath = "Name";
 												Dropdown.SelectionChanged += dropdownChange;
@@ -64,18 +67,22 @@ namespace Simulation {
 
 												mediaPlayer = new MediaPlayer();
 
-												// Set the media source to the location of your audio file
+
 												mediaPlayer.Open(new Uri("pack://siteoforigin:,,,/CornfieldChase.mp3"));
 
+												mediaPlayer.Volume = 1;
 
-												// Start playing the audio
 												mediaPlayer.Play();
 												mediaPlayer.MediaFailed += (sender, args) =>
 												{
-																// Handle the error
+
 																MessageBox.Show(args.ErrorException.Message);
 												};
+												mediaPlayer.MediaEnded += (sender, args) =>
+												{
 
+																RestartSong();
+												};
 
 												DispatcherTimer timer = new DispatcherTimer();
 												timer.Interval = TimeSpan.FromMilliseconds(10);
@@ -85,6 +92,15 @@ namespace Simulation {
 
 				}
 
+								private void RestartSong() {
+												if (mediaPlayer != null && mediaPlayer.Source != null) {
+																if (mediaPlayer.NaturalDuration.HasTimeSpan &&
+																				mediaPlayer.NaturalDuration.TimeSpan <= mediaPlayer.Position) {
+																				mediaPlayer.Position = TimeSpan.Zero;
+																				mediaPlayer.Play();
+																}
+												}
+								}
 								public void Timer_Tick(object sender, EventArgs e) {
 
 												days += Doubled ? speed / 10 : speed/1000;
@@ -139,9 +155,9 @@ namespace Simulation {
 																				if (DisplayNames) {
 																								TextBlock textBlock = new TextBlock();
 																								textBlock.FontSize = fontsize;
-																								textBlock.Foreground = new SolidColorBrush(obj.Color);
+																								textBlock.Foreground = new SolidColorBrush(Colors.Yellow);
 																								textBlock.Text = obj.Name;
-																								textBlock.Foreground = Brushes.White;
+
 
 																								Canvas.SetLeft(textBlock, Canvas.GetLeft(ellipse));
 																								Canvas.SetTop(textBlock, Canvas.GetTop(ellipse) - textBlock.ActualHeight - 25);
@@ -165,40 +181,40 @@ namespace Simulation {
 																				double bottom;
 																				right = canvas.ActualWidth / 2- ellipse.Width / 2 + point.Item1;
 																				bottom = canvas.ActualHeight / 2- ellipse.Height / 2 + point.Item2;
-
-
-																				Canvas.SetLeft(ellipse, right);
-																				Canvas.SetTop(ellipse, bottom);
 																				Ellipse textPlace = ellipse;
-																				Ellipse orbit = new Ellipse();
-																				if (obj is Moon) {
-																								orbit.Width = point.Item3;
-																								orbit.Height = orbit.Width;
-																				} 
-																				else {
-																								orbit.Width = ((obj.OrbitalRadius) / 2000) +centerRad;
-																								orbit.Height = orbit.Width;
-																				}
-																				if (obj is AsteroidBelt) {
-																								orbit.Stroke = new LinearGradientBrush(Colors.Firebrick, Colors.Sienna, new Point(0, 0), new Point(1, 1));
-																								orbit.StrokeThickness = 5;
-																								textPlace = orbit;
-																				} else {
-																								orbit.Stroke = new SolidColorBrush(Colors.White);
-																								orbit.StrokeThickness = 0.5;
-																				}
-																				Canvas.SetLeft(orbit, canvas.ActualWidth / 2- orbit.Width / 2);
-																				Canvas.SetTop(orbit, canvas.ActualHeight / 2- orbit.Height / 2);
-																				canvas.Children.Add(orbit);
+																				
+																								Canvas.SetLeft(ellipse, right);
+																								Canvas.SetTop(ellipse, bottom);
+																								
+																								Ellipse orbit = new Ellipse();
+																								if (obj is Moon) {
+																												orbit.Width = point.Item3;
+																												orbit.Height = orbit.Width;
+																								} else {
+																												orbit.Width = ((obj.OrbitalRadius) / 2000) + centerRad;
+																												orbit.Height = orbit.Width;
+																								}
+																								if (obj is AsteroidBelt) {
+																												orbit.Stroke = new LinearGradientBrush(Colors.Firebrick, Colors.Sienna, new Point(0, 0), new Point(1, 1));
+																												orbit.StrokeThickness = 5;
+																												textPlace = orbit;
+																								} else {
+																												orbit.Stroke = new SolidColorBrush(Colors.White);
+																												orbit.StrokeThickness = 0.5;
+																								}
+																				//if (DisplayNames) { todo
+																								Canvas.SetLeft(orbit, canvas.ActualWidth / 2 - orbit.Width / 2);
+																								Canvas.SetTop(orbit, canvas.ActualHeight / 2 - orbit.Height / 2);
+																								canvas.Children.Add(orbit);
+																				//}
 																				if (!(obj is AsteroidBelt)) {
 																								canvas.Children.Add(ellipse);
 																				}
 																				if (DisplayNames) {
 																								TextBlock textBlock = new TextBlock();
 																								textBlock.Text = obj.Name;
-
 																								textBlock.FontSize = fontsize;
-																								textBlock.Foreground = new SolidColorBrush(obj.Color);
+																								textBlock.Foreground = new SolidColorBrush(Colors.Yellow);
 																								Canvas.SetLeft(textBlock, Canvas.GetLeft(textPlace));
 																								Canvas.SetTop(textBlock, Canvas.GetTop(textPlace) - textBlock.ActualHeight - 25);
 																								canvas.Children.Add(textBlock);
@@ -231,6 +247,9 @@ namespace Simulation {
 								private void InitSolarSystem() {
 												SpaceObject Sun = new Star("Sun", 0, 696, 0, 27, Colors.OrangeRed, null);
 												solarSystem.Add(Sun);
+												// Belts
+												SpaceObject mainAst = new AsteroidBelt("The main belt", 418874, 0, 2027.0942, 0, Colors.SaddleBrown, Sun);
+												solarSystem.Add(mainAst);
 												// Planets
 												SpaceObject Mercury = new Planet("Mercury", 57910, 2.439, 87.97, 59, Colors.SlateGray, Sun);
 												SpaceObject Venus = new Planet("Venus", 108200, 6.051, 224.7, 243, Colors.White, Sun);
@@ -348,9 +367,7 @@ namespace Simulation {
 												// Comets
 												SpaceObject Halley = new Comet("Comet Halley", 2670000, 0.0055, 27794.95425, 2.2, Colors.DimGray, Sun);
 												solarSystem.Add(Halley);
-												// Belts
-												SpaceObject mainAst = new AsteroidBelt("The main belt", 418874, 0, 2027.0942, 0, Colors.SaddleBrown, Sun);
-												solarSystem.Add(mainAst);
+
 								}
 				}
 }
