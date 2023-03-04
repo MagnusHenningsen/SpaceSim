@@ -14,9 +14,12 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Resources;
 using System.Windows.Navigation;
+
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Media;
 
 namespace Simulation {
 				/// <summary>
@@ -26,14 +29,11 @@ namespace Simulation {
 								List<SpaceSim.SpaceObject> FocusedObjects = new List<SpaceObject>();
 								List<SpaceSim.SpaceObject> solarSystem = new List<SpaceObject>();
 								double days = 0;
-								private Point _start;
-								private double _zoom = 1.0;
-								private Point _origin = new Point(0, 0);
 								Boolean trueScale = false;
 								double speed = 0.001;
 								Boolean Doubled = false;
 								Boolean DisplayNames = true;
-
+								MediaPlayer mediaPlayer;
 								public MainWindow() {
 												InitializeComponent();
 
@@ -61,14 +61,32 @@ namespace Simulation {
 												displayNames.Click += (object s, RoutedEventArgs e) => {
 																DisplayNames = !DisplayNames;
 												};
-												DispatcherTimer timer = new DispatcherTimer();
-												timer.Interval = TimeSpan.FromMilliseconds(10); 
-												timer.Tick += Timer_Tick;
-												timer.Start(); 
 
-								}
+												mediaPlayer = new MediaPlayer();
+
+												// Set the media source to the location of your audio file
+												mediaPlayer.Open(new Uri("pack://siteoforigin:,,,/CornfieldChase.mp3"));
+
+
+												// Start playing the audio
+												mediaPlayer.Play();
+												mediaPlayer.MediaFailed += (sender, args) =>
+												{
+																// Handle the error
+																MessageBox.Show(args.ErrorException.Message);
+												};
+
+
+												DispatcherTimer timer = new DispatcherTimer();
+												timer.Interval = TimeSpan.FromMilliseconds(10);
+												timer.Tick += Timer_Tick;
+												timer.Start();
+								
+
+				}
+
 								public void Timer_Tick(object sender, EventArgs e) {
-												// 1 = 100 -> 0.1 = 10 -> 0.01 = 1
+
 												days += Doubled ? speed / 10 : speed/1000;
 												speedLabel.Content = Doubled ? Math.Round(speed / 10 * 100, 2) : Math.Round(speed / 1000 * 100, 2);
 												speedLabel.Content += " Day(s)/s";
@@ -77,12 +95,10 @@ namespace Simulation {
 												Paint();
 								}
 								private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-												// Get the new value of the slider
+
 												var value = e.NewValue;
 												speed = value;
-												// Do something with the value, such as updating a property or UI element
-												// For example, to update a label with the value:
-												// label.Content = value;
+
 								}
 								private double fontsize = 10;
 								private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e) {
@@ -92,7 +108,7 @@ namespace Simulation {
 												var transform = new ScaleTransform(newScale, newScale);
 												canvas.LayoutTransform = transform;
 
-												fontsize = 12 / newScale; // adjust the base font size as needed
+												fontsize = 12 / newScale; 
 
 
 								}
@@ -123,6 +139,7 @@ namespace Simulation {
 																				if (DisplayNames) {
 																								TextBlock textBlock = new TextBlock();
 																								textBlock.FontSize = fontsize;
+																								textBlock.Foreground = new SolidColorBrush(obj.Color);
 																								textBlock.Text = obj.Name;
 																								textBlock.Foreground = Brushes.White;
 
@@ -179,8 +196,9 @@ namespace Simulation {
 																				if (DisplayNames) {
 																								TextBlock textBlock = new TextBlock();
 																								textBlock.Text = obj.Name;
-																								textBlock.Foreground = Brushes.White;
+
 																								textBlock.FontSize = fontsize;
+																								textBlock.Foreground = new SolidColorBrush(obj.Color);
 																								Canvas.SetLeft(textBlock, Canvas.GetLeft(textPlace));
 																								Canvas.SetTop(textBlock, Canvas.GetTop(textPlace) - textBlock.ActualHeight - 25);
 																								canvas.Children.Add(textBlock);

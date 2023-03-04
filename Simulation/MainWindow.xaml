@@ -1,9 +1,10 @@
 ﻿<Window x:Class="Simulation.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
         Title="MainWindow" Height="500" Width="1000" Name="simWindow" 
         PreviewMouseWheel="Canvas_MouseWheel" Background="Black">
-    <Grid>
+    <Grid Name="MainGrid">
         <Canvas Background="Black" Name="canvas"/>
         <ComboBox Name="Dropdown" Width="100" Height="25" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
@@ -16,6 +17,8 @@
             <Label Foreground="White" Width="75" Margin="-20, 2.5">Speed x100</Label>
             <Button Name="displayNames" Width="100" Height="25" VerticalAlignment="Top" Margin="30,5,0,0">Show Names</Button>
             <Label Name="DaysOrbited" VerticalAlignment="Top" Foreground="White" Width="150" Margin="10, 2.5"></Label>
+
+
         </StackPanel>
     </Grid>
 </Window>
