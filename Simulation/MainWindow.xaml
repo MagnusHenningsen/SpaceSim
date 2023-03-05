@@ -1,18 +1,20 @@
 ﻿<Window x:Class="Simulation.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-
+        KeyDown="Window_KeyDown"
         Title="MainWindow" Height="500" Width="1000" Name="simWindow" 
-        PreviewMouseWheel="Canvas_MouseWheel" Background="Black">
+        PreviewMouseWheel="Canvas_MouseWheel" Background="Black"
+        PreviewKeyDown="Window_KeyDown"
+        >
     <Grid Name="MainGrid">
         <Canvas Background="Black" Name="canvas"/>
-        <ComboBox Name="Dropdown" Width="100" Height="25" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <ComboBox Name="Dropdown" Width="100" Height="25" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
         <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
             <Label Content="Objectsize True Scale:" VerticalAlignment="Top" Margin="-10,30,10,10" Foreground="White" />
             <CheckBox Name="Check" Width="28" Height="20" Margin="-10,37.5,10,10" VerticalAlignment="Top"/>
             <Button Name="reset" VerticalAlignment="Top" Margin="5, 0, 0, 0" Width="100" Height="25">Reset</Button>
             <Label Name="speedLabel" Foreground="White" Width="100"></Label>
-            <Slider Width="120" Minimum="1" Margin="5,4,0,0" Maximum="100" ValueChanged="Slider_ValueChanged"/>
+            <Slider Name="slider" Width="120" Minimum="1" Margin="5,4,0,0" Maximum="100" ValueChanged="Slider_ValueChanged"/>
             <CheckBox Name="SpeedCheck" Width="28" Height="20" Margin="5,7.5,10,10" VerticalAlignment="Top"/>
             <Label Foreground="White" Width="75" Margin="-20, 2.5">Speed x100</Label>
             <Button x:Name="displayOrbits" Width="100" Height="25"  VerticalAlignment="Top" Margin="30,5,0,0" Content="Show Orbits"/>

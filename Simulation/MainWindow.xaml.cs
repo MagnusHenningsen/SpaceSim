@@ -58,8 +58,11 @@ namespace Simulation {
 												reset.Click += (object s, RoutedEventArgs e) => {
 																days = 0;
 												};
-												SpeedCheck.Click += (object s, RoutedEventArgs e) => {
-																Doubled = !Doubled;
+												SpeedCheck.Checked += (object s, RoutedEventArgs e) => {
+																Doubled = true;
+												};
+												SpeedCheck.Unchecked += (object s, RoutedEventArgs e) => {
+																Doubled = false;
 												};
 												displayNames.Click += (object s, RoutedEventArgs e) => {
 																DisplayNames = !DisplayNames;
@@ -225,6 +228,24 @@ namespace Simulation {
 
 																counter++;
 																
+												}
+								}
+								private void Window_KeyDown(object sender, KeyEventArgs e) {
+												if (e.Key == Key.Left) {
+																slider.Value -= 1;
+																e.Handled = true;
+												} else if (e.Key == Key.Right) {
+																slider.Value += 1;
+																e.Handled = true;
+												} else if (e.Key == Key.Up) {
+																Dropdown.SelectedIndex = Math.Max(0, Dropdown.SelectedIndex - 1);
+																e.Handled = true;
+												} else if (e.Key == Key.Down) {
+																Dropdown.SelectedIndex = Math.Min(Dropdown.Items.Count - 1, Dropdown.SelectedIndex + 1);
+																e.Handled = true;
+												} else if (e.Key == Key.Enter) {
+																SpeedCheck.IsChecked = !SpeedCheck.IsChecked;
+																e.Handled = true;
 												}
 								}
 
