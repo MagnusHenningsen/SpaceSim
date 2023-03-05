@@ -66,9 +66,12 @@ namespace Simulation {
 												};
 												displayNames.Click += (object s, RoutedEventArgs e) => {
 																DisplayNames = !DisplayNames;
+																int x = 0;
+																_ = DisplayNames ? ((Button)s).Content = "Hide Names" : ((Button)s).Content = "Show Names";  
 												};
 												displayOrbits.Click += (object s, RoutedEventArgs e) => {
 																DisplayOrbit = !DisplayOrbit;
+																_ = DisplayOrbit ? ((Button)s).Content = "Hide Orbits" : ((Button)s).Content = "Show Orbits";
 												};
 												mediaPlayer = new MediaPlayer();
 
@@ -88,7 +91,9 @@ namespace Simulation {
 
 																RestartSong();
 												};
-
+												MuteButton.Click += (sender, args) => {
+																MuteButton_Click(sender, args);
+												};
 												DispatcherTimer timer = new DispatcherTimer();
 												timer.Interval = TimeSpan.FromMilliseconds(10);
 												timer.Tick += Timer_Tick;
@@ -248,7 +253,15 @@ namespace Simulation {
 																e.Handled = true;
 												}
 								}
-
+								private void MuteButton_Click(object sender, RoutedEventArgs e) {
+												if (mediaPlayer.IsMuted) {
+																mediaPlayer.IsMuted = false;
+																((Button)sender).Content = "Mute";
+												} else {
+																mediaPlayer.IsMuted = true;
+																((Button)sender).Content = "Unmute";
+												}
+								}
 								private void SetFocus(SpaceObject obj) {
 												FocusedObjects.Clear();
 												FocusedObjects.Add(obj);
