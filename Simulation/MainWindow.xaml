@@ -15,8 +15,11 @@
             <Slider Width="120" Minimum="1" Margin="5,4,0,0" Maximum="100" ValueChanged="Slider_ValueChanged"/>
             <CheckBox Name="SpeedCheck" Width="28" Height="20" Margin="5,7.5,10,10" VerticalAlignment="Top"/>
             <Label Foreground="White" Width="75" Margin="-20, 2.5">Speed x100</Label>
-            <Button Name="displayNames" Width="100" Height="25" VerticalAlignment="Top" Margin="30,5,0,0">Show Names</Button>
-            <Label Name="DaysOrbited" VerticalAlignment="Top" Foreground="White" Width="250" Margin="10, 2.5"></Label>
+            <Button x:Name="displayOrbits" Width="100" Height="25"  VerticalAlignment="Top" Margin="30,5,0,0" Content="Show Orbits"/>
+            <Button Name="displayNames" Width="100" Height="25" VerticalAlignment="Top" Margin="-100,30,0,0">Show Names</Button>
+            
+
+            <Label Name="DaysOrbited" VerticalAlignment="Top" Foreground="White" Width="175" Margin="10, 2.5"></Label>
 
 
         </StackPanel>

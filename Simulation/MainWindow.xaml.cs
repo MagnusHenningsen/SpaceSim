@@ -34,7 +34,7 @@ namespace Simulation {
 								Boolean Doubled = false;
 								Boolean DisplayNames = true;
 								MediaPlayer mediaPlayer;
-
+								Boolean DisplayOrbit = true;
 								public MainWindow() {
 												InitializeComponent();
 
@@ -64,7 +64,9 @@ namespace Simulation {
 												displayNames.Click += (object s, RoutedEventArgs e) => {
 																DisplayNames = !DisplayNames;
 												};
-
+												displayOrbits.Click += (object s, RoutedEventArgs e) => {
+																DisplayOrbit = !DisplayOrbit;
+												};
 												mediaPlayer = new MediaPlayer();
 
 
@@ -202,11 +204,11 @@ namespace Simulation {
 																												orbit.Stroke = new SolidColorBrush(Colors.White);
 																												orbit.StrokeThickness = 0.5;
 																								}
-																				//if (DisplayNames) { todo
+																				if (DisplayOrbit || obj is AsteroidBelt) {
 																								Canvas.SetLeft(orbit, canvas.ActualWidth / 2 - orbit.Width / 2);
 																								Canvas.SetTop(orbit, canvas.ActualHeight / 2 - orbit.Height / 2);
 																								canvas.Children.Add(orbit);
-																				//}
+																				}
 																				if (!(obj is AsteroidBelt)) {
 																								canvas.Children.Add(ellipse);
 																				}
