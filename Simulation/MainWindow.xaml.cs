@@ -17,7 +17,7 @@ namespace Simulation {
     /// </summary>
     public partial class MainWindow : Window {
         List<SpaceSim.SpaceObject> FocusedObjects = new List<SpaceObject>();
-        List<SpaceSim.SpaceObject> solarSystem = new List<SpaceObject>();
+        List<SpaceSim.SpaceObject> SolarSystem = new List<SpaceObject>();
         double days = 0;
         Boolean trueScale = false;
         double speed = 0.001;
@@ -28,13 +28,13 @@ namespace Simulation {
         public MainWindow() {
             InitializeComponent();
 
-            SolarSystem sys = new SolarSystem();
-            solarSystem = sys.solarSystem;
-            SetFocus(solarSystem[0]);
+            SpaceObject.SolarSystem sys = new SpaceObject.SolarSystem();
+            SolarSystem = sys.solarSystem;
+            SetFocus(SolarSystem[0]);
 
             List<SpaceObject> GreaterObjects = new List<SpaceObject>();
             FocusedObjects.ForEach(obj => {
-                if (obj is Planet || obj is Star || obj is Dwarf) {
+                if (obj is SpaceObject.Planet || obj is SpaceObject.Star || obj is SpaceObject.Dwarf) {
                     GreaterObjects.Add(obj);
                 }
             });
@@ -86,7 +86,7 @@ namespace Simulation {
             if (playing) {
                 mediaPlayer.Stop();
                 playing = false;
-                ((Button)s).Content = "Start Music";
+                ((Button)s).Content = "SpaceObject.Start Music";
             } else {
                 mediaPlayer.Play();
                 playing = true;
@@ -159,7 +159,7 @@ namespace Simulation {
                     Ellipse ellipse = new Ellipse();
                     SolidColorBrush br = new SolidColorBrush(obj.Color);
                     Tuple<double, double, double> point;
-                    if (obj is Moon) {
+                    if (obj is SpaceObject.Moon) {
                         ellipse.Width = trueScale ? obj.Radius : Math.Max(obj.Radius * 15, 10); ellipse.Height = ellipse.Width;
                     } else {
                         ellipse.Width = trueScale ? obj.Radius : Math.Max(obj.Radius, 3); ellipse.Height = ellipse.Width;
@@ -179,14 +179,14 @@ namespace Simulation {
                     Canvas.SetTop(ellipse, bottom);
 
                     Ellipse orbit = new Ellipse();
-                    if (obj is Moon) {
+                    if (obj is SpaceObject.Moon) {
                         orbit.Width = point.Item3;
                         orbit.Height = orbit.Width;
                     } else {
                         orbit.Width = ((obj.OrbitalRadius) / 2000) + centerRad;
                         orbit.Height = orbit.Width;
                     }
-                    if (obj is AsteroidBelt) {
+                    if (obj is SpaceObject.AsteroidBelt) {
                         orbit.Stroke = new LinearGradientBrush(Colors.Firebrick, Colors.Sienna, new Point(0, 0), new Point(1, 1));
                         orbit.StrokeThickness = 5;
                         textPlace = orbit;
@@ -194,12 +194,12 @@ namespace Simulation {
                         orbit.Stroke = new SolidColorBrush(Colors.White);
                         orbit.StrokeThickness = 0.5;
                     }
-                    if (DisplayOrbit || obj is AsteroidBelt) {
+                    if (DisplayOrbit || obj is SpaceObject.AsteroidBelt) {
                         Canvas.SetLeft(orbit, canvas.ActualWidth / 2 - orbit.Width / 2);
                         Canvas.SetTop(orbit, canvas.ActualHeight / 2 - orbit.Height / 2);
                         canvas.Children.Add(orbit);
                     }
-                    if (!(obj is AsteroidBelt)) {
+                    if (!(obj is SpaceObject.AsteroidBelt)) {
                         canvas.Children.Add(ellipse);
                     }
                     if (DisplayNames) {
@@ -239,7 +239,7 @@ namespace Simulation {
         private void SetFocus(SpaceObject obj) {
             FocusedObjects.Clear();
             FocusedObjects.Add(obj);
-            solarSystem.ForEach((x) => {
+            SolarSystem.ForEach((x) => {
                 if (x.Orbits != null && obj.Name.Equals(x.Orbits.Name)) {
                     FocusedObjects.Add(x);
                 }

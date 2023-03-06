@@ -47,7 +47,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Init.cs" />
     <Compile Include="MainProg.cs" />
     <Compile Include="SpaceObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

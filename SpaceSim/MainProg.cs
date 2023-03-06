@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 class Astronomy {
     public static void Main() {
-        SolarSystem sys = new SolarSystem();
+        SpaceObject.SolarSystem sys = new SpaceObject.SolarSystem();
         List<SpaceObject> solarSystem = sys.solarSystem;
         Boolean accepted = false;
         String inp;
