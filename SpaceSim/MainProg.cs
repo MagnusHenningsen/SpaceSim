@@ -1,16 +1,15 @@
 ﻿using SpaceSim;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 
 class Astronomy {
     public static void Main() {
-        InitializeSolarSystem init = new InitializeSolarSystem();
-        List<SpaceObject> solarSystem = init.solarSystem;
+        SolarSystem sys = new SolarSystem();
+        List<SpaceObject> solarSystem = sys.solarSystem;
         Boolean accepted = false;
         String inp;
         double days = 0;
-								while (!accepted) {
+        while (!accepted) {
             Console.Write("Time (days) since 0: ");
             inp = Console.ReadLine();
             if (double.TryParse(inp, out double val)) {
@@ -23,12 +22,12 @@ class Astronomy {
 
         Boolean found = false;
         while (!found) {
-												Console.Write("Which celestial object do you want information for? ");
-												inp = Console.ReadLine();
-           
-            foreach (SpaceObject x in solarSystem) { 
+            Console.Write("Which celestial object do you want information for? ");
+            inp = Console.ReadLine();
 
-																if (x.Name.Equals(inp, StringComparison.OrdinalIgnoreCase)) {
+            foreach (SpaceObject x in solarSystem) {
+
+                if (x.Name.Equals(inp, StringComparison.OrdinalIgnoreCase)) {
                     found = true;
                     x.Draw();
                     Console.WriteLine($"Position after {days} days: {x.getPosition(days, false, 0)}");
