@@ -81,6 +81,9 @@ namespace Simulation {
 																mediaPlayer.Load();
 																mediaPlayer.Play();
 												}
+												MuteButton.Click += (object s, RoutedEventArgs e) => {
+																SoundplayerChange(s, e);
+												};
 
 	
 												DispatcherTimer timer = new DispatcherTimer();
@@ -90,7 +93,18 @@ namespace Simulation {
 								
 
 				}
-
+								Boolean playing = true;
+								public void SoundplayerChange(object s, RoutedEventArgs e) {
+												if (playing) {
+																mediaPlayer.Stop();
+																playing = false;
+																((Button)s).Content = "Start Music";
+												} else {
+																mediaPlayer.Play();
+																playing = true;
+																((Button)s).Content = "Stop Music";
+												}
+								}
 								public void Timer_Tick(object sender, EventArgs e) {
 
 												days += Doubled ? speed / 10 : speed/1000;

@@ -19,7 +19,7 @@
             <Label Foreground="White" Width="75" Margin="-20, 2.5">Speed x100</Label>
             <Button x:Name="displayOrbits" Width="100" Height="25"  VerticalAlignment="Top" Margin="30,5,0,0" Content="Hide Orbits"/>
             <Button Name="displayNames" Width="100" Height="25" VerticalAlignment="Top" Margin="-100,30,0,0">Hide Names</Button>
-            <Button x:Name="MuteButton" Width="100" Height="25" Margin="-100, 55, 0, 0" VerticalAlignment="Top" Content="Mute"/>
+            <Button x:Name="MuteButton" Width="100" Height="25" Margin="-100, 55, 0, 0" VerticalAlignment="Top" Content="Stop Music"/>
 
             <Label Name="DaysOrbited" VerticalAlignment="Top" Foreground="White" Width="175" Margin="10, 2.5"></Label>
             
