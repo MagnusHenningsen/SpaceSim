@@ -20,6 +20,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Media;
+using System.IO;
+using System.Reflection;
+using Path = System.IO.Path;
 
 namespace Simulation {
 				/// <summary>
@@ -33,7 +36,7 @@ namespace Simulation {
 								double speed = 0.001;
 								Boolean Doubled = false;
 								Boolean DisplayNames = true;
-								MediaPlayer mediaPlayer;
+								SoundPlayer mediaPlayer;
 								Boolean DisplayOrbit = true;
 								public MainWindow() {
 												InitializeComponent();
@@ -73,27 +76,13 @@ namespace Simulation {
 																DisplayOrbit = !DisplayOrbit;
 																_ = DisplayOrbit ? ((Button)s).Content = "Hide Orbits" : ((Button)s).Content = "Show Orbits";
 												};
-												mediaPlayer = new MediaPlayer();
+												using (FileStream stream = File.Open(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\CornfieldChase.wav"), FileMode.Open)) {
+																mediaPlayer = new SoundPlayer(stream);
+																mediaPlayer.Load();
+																mediaPlayer.Play();
+												}
 
-
-												mediaPlayer.Open(new Uri("pack://siteoforigin:,,,/CornfieldChase.mp3"));
-
-												mediaPlayer.Volume = 1;
-
-												mediaPlayer.Play();
-												mediaPlayer.MediaFailed += (sender, args) =>
-												{
-
-																MessageBox.Show(args.ErrorException.Message);
-												};
-												mediaPlayer.MediaEnded += (sender, args) =>
-												{
-
-																RestartSong();
-												};
-												MuteButton.Click += (sender, args) => {
-																MuteButton_Click(sender, args);
-												};
+	
 												DispatcherTimer timer = new DispatcherTimer();
 												timer.Interval = TimeSpan.FromMilliseconds(10);
 												timer.Tick += Timer_Tick;
@@ -102,15 +91,6 @@ namespace Simulation {
 
 				}
 
-								private void RestartSong() {
-												if (mediaPlayer != null && mediaPlayer.Source != null) {
-																if (mediaPlayer.NaturalDuration.HasTimeSpan &&
-																				mediaPlayer.NaturalDuration.TimeSpan <= mediaPlayer.Position) {
-																				mediaPlayer.Position = TimeSpan.Zero;
-																				mediaPlayer.Play();
-																}
-												}
-								}
 								public void Timer_Tick(object sender, EventArgs e) {
 
 												days += Doubled ? speed / 10 : speed/1000;
@@ -253,15 +233,7 @@ namespace Simulation {
 																e.Handled = true;
 												}
 								}
-								private void MuteButton_Click(object sender, RoutedEventArgs e) {
-												if (mediaPlayer.IsMuted) {
-																mediaPlayer.IsMuted = false;
-																((Button)sender).Content = "Mute";
-												} else {
-																mediaPlayer.IsMuted = true;
-																((Button)sender).Content = "Unmute";
-												}
-								}
+
 								private void SetFocus(SpaceObject obj) {
 												FocusedObjects.Clear();
 												FocusedObjects.Add(obj);
